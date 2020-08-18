@@ -8,6 +8,11 @@
 
 import UIKit
 
+
+struct Fruit {
+    let name: String
+    let isChecked: Bool
+}
 class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
     
     @IBOutlet private var tableView: UITableView!
@@ -16,20 +21,25 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     private let KeyName = "Name"
     private let KeyCheck = "Check"
     
+    //fruitItemsを初期化
+        private var fruitItems: [Fruit] = [
+        Fruit(name:"りんご", isChecked: false),
+        Fruit(name:"みかん", isChecked: true),
+        Fruit(name:"バナナ", isChecked: false),
+        Fruit(name:"パイナップル", isChecked: true)
+    ]
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
         
-        fruitItems = [[KeyName:"りんご",KeyCheck:false,],
-                      [KeyName:"みかん",KeyCheck:true,],
-                      [KeyName:"バナナ",KeyCheck:false,],
-                      [KeyName:"パイナップル",KeyCheck:true,]
-        ]
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        //1行の場合、returnは省略可能
+        1
     }
     
     
@@ -44,8 +54,10 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         let fruitItem = self.fruitItems[indexPath.row]
         cell.cellImage.image = nil
         
-        if fruitItem[KeyCheck] as? Bool == true {
+        if fruitItem.isChecked {
             cell.cellImage.image = UIImage(named: "checkmark")
+        } else {
+            cell.cellImage.image = nil
         }
         
         cell.label.text = (fruitItem[KeyName] as? String) ?? ""
@@ -59,12 +71,13 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     
     
     @IBAction func exitSave(segue:UIStoryboardSegue){
-        let AddVC = segue.source as! AddViewController
-        let addText = AddVC.addTextField.text
+        //定数の先頭は小文字
+        let addVC = segue.source as! AddViewController
+        let addText = addVC.addTextField.text
         
-        //空の配列が入ることを防ぐ
-        if addText != ""{
-            fruitItems.append([KeyName:addText!,KeyCheck:false])
+        //if let で！を避ける
+        if let addText = addVC.addTextField.text {
+            fruitItems.append(Fruit(name:addText, isChecked:false))
         }
         tableView.reloadData()
     }
